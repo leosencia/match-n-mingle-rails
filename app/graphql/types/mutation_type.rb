@@ -9,5 +9,6 @@ module Types
     field :create_swipe, mutation: Mutations::CreateSwipe
     field :create_match, mutation: Mutations::CreateMatch
     field :change_liked_back, mutation: Mutations::ChangeLikedBack
+    field :edit_profile, mutation: Mutations::EditProfile
   end
 end

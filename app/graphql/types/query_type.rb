@@ -72,5 +72,44 @@ module Types
       Swipe.all
     end
 
+    field :matches_by_user, [Types::MatchType], null: false do
+      argument :user_id, ID, required: true
+    end
+
+    def matches_by_user(user_id:)
+      User.find(user_id).matches
+    rescue ActiveRecord::RecordNotFound => e
+      GraphQL::ExecutionError.new("User not found")
+    end
+
+    field :all_matches, [ Types::MatchType ], null: false, description: "All matches in the database"
+
+    def all_matches
+      Match.all
+    end
+
+    field :fetch_filtered_users, [Types::UserType], null: false do
+      argument :current_user_id, ID, required: true
+    end
+
+    def fetch_filtered_users(current_user_id:)
+      current_user = User.find(current_user_id)
+      if current_user
+        # Get all user IDs that the current user has matches with
+        matched_user_ids = Match.where(user_id: current_user_id).pluck(:matched_user_id)
+
+        # Get the gender interest of the current user
+        gender_interest = current_user.gender_interest
+
+        # Fetch users excluding the current user, users with matches, and users not aligned with gender interest
+        User.where.not(id: current_user_id)
+            .where.not(id: matched_user_ids)
+            .where(gender: gender_interest)
+      else
+        GraphQL::ExecutionError.new("Current user not found")
+      end
+    rescue ActiveRecord::RecordNotFound => e
+      GraphQL::ExecutionError.new("Error finding users: #{e.message}")
+    end
   end
 end
