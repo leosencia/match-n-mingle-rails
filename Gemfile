@@ -62,4 +62,8 @@ gem "graphiql-rails", "~> 1.10"
 
 gem "jwt"
 
+gem 'rack-cors', require: 'rack/cors'
+
+gem 'aws-sdk'
+
 gem "aws-sdk-s3", "~> 1.156", require: false

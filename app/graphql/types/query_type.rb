@@ -21,11 +21,56 @@ module Types
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
-    # TODO: remove me
-    field :test_field, String, null: false,
-      description: "An example field added by the generator"
-    def test_field
-      "Hello World!"
+    field :total_users, Integer, null: false, description: "Total number of users in the database"
+
+    def total_users
+      User.where(admin: false).count
     end
+
+    field :total_matches, Integer, null: false, description: "Total number of matches in the database"
+
+    def total_matches
+      Match.count
+    end
+
+    field :total_swipes, Integer, null: false, description: "Total number of swipes in the database"
+
+    def total_swipes
+      Swipe.count
+    end
+
+    field :all_users, [ Types::UserType ], null: false, description: "All users in the database"
+
+    def all_users
+      User.where(admin: false)
+    end
+
+    field :user, Types::UserType, null: false do
+      argument :id, ID, required: true
+    end
+
+    def user(id:)
+      User.find(id)
+    rescue ActiveRecord::RecordNotFound => e
+      GraphQL::ExecutionError.new("User not found")
+    end
+
+    field :swipes_by_user, [Types::SwipeType], null: false do
+      argument :user_id, ID, required: true
+    end
+
+    def swipes_by_user(user_id:)
+      User.find(user_id).swipes
+    rescue ActiveRecord::RecordNotFound => e
+      GraphQL::ExecutionError.new("User not found")
+    end
+
+
+    field :all_swipes, [ Types::SwipeType ], null: false, description: "All swipes in the database"
+
+    def all_swipes
+      Swipe.all
+    end
+
   end
 end
