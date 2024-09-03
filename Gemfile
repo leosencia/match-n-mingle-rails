@@ -66,4 +66,4 @@ gem 'rack-cors', require: 'rack/cors'
 
 gem 'aws-sdk'
 
-gem "aws-sdk-s3", "~> 1.156", require: false
+gem "aws-sdk-s3", "~> 1.160", require: false
